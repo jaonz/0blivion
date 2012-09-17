@@ -4,6 +4,7 @@
 
 #include "mapa.h"
 #include "settings.h"
+#include "object.h"
 
 enum MYKEYS {
 	KEY_W, KEY_S, KEY_UP, KEY_DOWN, KEY_ENTER, KEY_P
@@ -51,12 +52,16 @@ int main(int argc, char **argv)
 
 	al_start_timer(timer);
 	 
+	//inicia o mapa
+	bomber_mapa_init();
+	 
 	while(!doexit) {
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
 		if(ev.type == ALLEGRO_EVENT_TIMER) {
 			if(redraw == true){
+				//TODO update objects
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -64,15 +69,26 @@ int main(int argc, char **argv)
 			break;
 		}
 		
+		else if(ev.type == ALLEGRO_EVENT_KEY_UP) {
+			switch(ev.keyboard.keycode) {	
+				case ALLEGRO_KEY_ESCAPE:
+					doexit = true;
+					break;
+			}	
+		}
 
 		if(redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
-
+			
+			bomber_mapa_draw(); //desenha o mapa
+			
 			al_flip_display();
 		}
 
 	}
-
+	
+	bomber_mapa_destroy(); //destrói o mapa junto de seus objetos.
+	
 	al_destroy_timer(timer);
 	al_destroy_display(display);
 	al_destroy_event_queue(event_queue);
